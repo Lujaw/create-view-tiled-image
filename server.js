@@ -5,7 +5,7 @@ const cors = require('cors');
 const _ = require('lodash');
 const path = require("path");
 const tiler = require("image-tiler");
-const { readdirSync } = require("fs");
+const readdirp = require("readdirp");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,12 +26,18 @@ const assetPath = path.join('client', 'public', 'assets');
 
 app.get("/listImages", async (req, res) => {
   try {
-    const lists = readdirSync(assetPath, { withFileTypes: true })
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name);
-    res.json({
-      images: lists
+    const list = await readdirp.promise(assetPath, {
+      directoryFilter: ['!.git', '!*modules'],
+      type: 'directories',
+      depth: 1
     });
+    const imagesWithZoomValue = _.chain(list)
+      .filter(({ path }) => path.includes("/"))
+      .groupBy(({ path }) => path.split("/")[0])
+      .map((value, key) => ({ name: key, zoom: value.length - 1 }))
+      .value();
+
+    res.json({ images: imagesWithZoomValue });
   } catch (error) {
     console.log('server#38->>>', { error });
     res.status(500).send(error);
