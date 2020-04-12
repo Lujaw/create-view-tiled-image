@@ -5,6 +5,7 @@ const cors = require('cors');
 const _ = require('lodash');
 const path = require("path");
 const tiler = require("image-tiler");
+const { readdirSync } = require("fs");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -20,8 +21,26 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const assetPath = path.join('client', 'public', 'assets');
+
+
+app.get("/listImages", async (req, res) => {
+  try {
+    const lists = readdirSync(assetPath, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+    res.json({
+      images: lists
+    });
+  } catch (error) {
+    console.log('server#38->>>', { error });
+    res.status(500).send(error);
+  }
+});
+
 app.post('/upload', async (req, res) => {
   try {
+    console.log('server#43->>>', { req });
     if (!req.files) {
       res.send({
         status: false,
@@ -30,7 +49,7 @@ app.post('/upload', async (req, res) => {
     } else {
       let image = req.files.image;
 
-      const filePath = path.join('client', 'public', 'assets');
+      const filePath = assetPath;
 
       image.mv(filePath + image.name);
 

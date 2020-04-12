@@ -17,6 +17,8 @@
   "author": "Luja Shrestha",
   "license": "ISC",
   "dependencies": {
+    "@material-ui/core": "^4.9.10",
+    "@material-ui/icons": "^4.9.1",
     "body-parser": "^1.19.0",
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
@@ -24,6 +26,7 @@
     "express-fileupload": "^1.1.7-alpha.3",
     "image-tiler": "git://github.com/lujaw/image-tiler.git#master",
     "lodash": "^4.17.15",
+    "material-ui-dropzone": "^2.4.9",
     "morgan": "^1.10.0"
   }
 }
