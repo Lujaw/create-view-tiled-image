@@ -27,6 +27,6 @@
     "image-tiler": "git://github.com/lujaw/image-tiler.git#master",
     "lodash": "^4.17.15",
     "material-ui-dropzone": "^2.4.9",
-    "morgan": "^1.10.0"
+    "readdirp": "^3.4.0"
   }
 }

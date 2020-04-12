@@ -5,21 +5,23 @@ import './App.css';
 
 const Map = ReactMapboxGl({});
 
+
 class App extends Component {
   state = {
-    images: []
+    images: [],
+    mapStyle: {}
   };
 
-  style = {
+  getMapStyle = (imageName, zoom) => ({
     "version": 8,
     "sources": {
       "image_tiles": {
         "type": "raster",
         "tiles": [
-          "http://localhost:3000/assets/cat/{z}/{x}_{y}.jpg",
+          `http://localhost:3000/assets/${imageName}/{z}/{x}_{y}.jpg`,
         ],
         "tileSize": 256,
-        "maxzoom": 3,
+        "maxzoom": zoom,
       }
     },
     "layers": [{
@@ -27,11 +29,23 @@ class App extends Component {
       "type": "raster",
       "source": "image_tiles"
     }]
-  };
+  });
+
+  switchImage = (imageName, zoom) => {
+    this.setState({
+      mapStyle: this.getMapStyle(imageName, zoom)
+    })
+  }
 
   componentDidMount() {
     this.callApi("/listImages")
-      .then((res) => this.setState({ images: res.images }))
+      .then(({ images }) => {
+        console.log('App#43->>>', { images });
+        this.setState({
+          images,
+          mapStyle: this.getMapStyle(images[0].name, images[0].zoom)
+        });
+      })
       .catch(err => console.log(err));
   }
 
@@ -80,20 +94,20 @@ class App extends Component {
       <div className="App">
         <header className="App-header">Tiled Image Viewer</header>
         <div className="map-container">
-          <Map
-            style={this.style}
+          {this.state.mapStyle.version && <Map
+            style={this.state.mapStyle}
             zoom={[0]}
-            maxzoom={2}
             containerStyle={{
-              height: '50vh',
+              height: '75vh',
               width: '75vw'
             }} >
             <Layer type="raster" id="layer_id" sourceId="image_tiles" />
             <ZoomControl />
           </Map >
+          }
         </div>
-        {1 && this.state.images.map(image =>
-          <button key={image}>{image}</button>
+        {this.state.images.map(({ name, zoom }) =>
+          <button key={name} onClick={() => this.switchImage(name, zoom)}>{name}</button>
         )}
         <FileDrop uploadFile={this.uploadFile.bind(this)} />
 
