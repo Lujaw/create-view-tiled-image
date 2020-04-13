@@ -4,10 +4,12 @@
   "description": "Create and view tiled image",
   "main": "index.js",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "client": "cd client && yarn start",
     "server": "nodemon server.js",
-    "dev": "concurrently -r -k \"yarn server\" \"yarn client\""
+    "dev": "concurrently -r -k \"yarn server\" \"yarn client\"",
+    "start": "concurrently -r -k \"yarn server\" \"yarn client\"",
+    "build": "cd client && yarn build"
   },
   "keywords": [
     "tiled",
