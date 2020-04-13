@@ -23,7 +23,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const assetPath = path.join('client', 'public', 'assets');
 
-
 app.get("/listImages", async (req, res) => {
   try {
     const list = await readdirp.promise(assetPath, {
@@ -39,14 +38,12 @@ app.get("/listImages", async (req, res) => {
 
     res.json({ images: imagesWithZoomValue });
   } catch (error) {
-    console.log('server#38->>>', { error });
     res.status(500).send(error);
   }
 });
 
 app.post('/upload', async (req, res) => {
   try {
-    console.log('server#43->>>', { req });
     if (!req.files) {
       res.send({
         status: false,
@@ -56,15 +53,16 @@ app.post('/upload', async (req, res) => {
       let image = req.files.image;
 
       const filePath = assetPath;
-
-      image.mv(filePath + image.name);
-
       try {
-        console.log('server#43->>>', { tiler, image });
-        tiler.tile({ fileBuffer: image.data, filePath: path.join(filePath, image.name.split(".")[0]) });
+        image.mv(path.join(filePath, image.name));
+        const options = {
+          output: path.join(filePath, image.name.split(".")[0]),
+          pyramid: true
+        };
+        tiler.tile({ fileBuffer: image.data, options });
       }
       catch (err) {
-        console.log('server#47->>>', { err });
+        console.log(err);
       }
 
       //send response

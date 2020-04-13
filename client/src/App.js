@@ -1,91 +1,79 @@
-import React, { Component } from 'react';
-import ReactMapboxGl, { Layer, ZoomControl } from 'react-mapbox-gl';
+import React, { Component } from "react";
+import ReactMapboxGl, { Layer, ZoomControl } from "react-mapbox-gl";
+import Carousel from "nuka-carousel";
 import FileDrop from "./FileDrop";
-import './App.css';
+import "./App.css";
 
 const Map = ReactMapboxGl({});
-
 
 class App extends Component {
   state = {
     images: [],
-    mapStyle: {}
+    mapStyle: {},
   };
 
   getMapStyle = (imageName, zoom) => ({
-    "version": 8,
-    "sources": {
-      "image_tiles": {
-        "type": "raster",
-        "tiles": [
-          `http://localhost:3000/assets/${imageName}/{z}/{x}_{y}.jpg`,
-        ],
-        "tileSize": 256,
-        "maxzoom": zoom,
-      }
+    version: 8,
+    sources: {
+      image_tiles: {
+        type: "raster",
+        tiles: [`http://localhost:3000/assets/${imageName}/{z}/{x}_{y}.jpg`],
+        tileSize: 256,
+        maxzoom: zoom,
+      },
     },
-    "layers": [{
-      "id": "simple-tiles",
-      "type": "raster",
-      "source": "image_tiles"
-    }]
+    layers: [
+      {
+        id: "simple-tiles",
+        type: "raster",
+        source: "image_tiles",
+      },
+    ],
   });
 
   switchImage = (imageName, zoom) => {
     this.setState({
-      mapStyle: this.getMapStyle(imageName, zoom)
-    })
-  }
+      mapStyle: this.getMapStyle(imageName, zoom),
+    });
+  };
 
   componentDidMount() {
-    this.callApi("/listImages")
+    this.getImages("/listImages")
       .then(({ images }) => {
-        console.log('App#43->>>', { images });
         this.setState({
           images,
-          mapStyle: this.getMapStyle(images[0].name, images[0].zoom)
+          mapStyle: this.getMapStyle(images[0].name, images[0].zoom),
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
-  callApi = async (url) => {
+  getImages = async (url) => {
     const response = await fetch("/listImages");
     const body = await response.json();
-    console.log('App#41->>>', { body });
     if (response.status !== 200) throw Error(body.message);
     return body;
   };
 
-
-  sendRequest(file) {
-    return new Promise((resolve, reject) => {
-      const req = new XMLHttpRequest();
-
-      const formData = new FormData();
-      formData.append("image", file, file.name);
-
-      req.open("POST", "http://localhost:5000/upload");
-      req.send(formData);
+  async sendFile(file) {
+    const formData = new FormData();
+    formData.append("image", file, file.name);
+    const response = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
     });
+    return response;
   }
 
   async uploadFile(files) {
-    console.log('App#60->>> upload called', { files, state: this.state, props: this.props });
-    // this.setState({ uploadProgress: {}, uploading: true });
     const promises = [];
-    files.forEach(file => {
-      promises.push(this.sendRequest(file));
+    files.forEach((file) => {
+      promises.push(this.sendFile(file));
     });
     try {
       const uploads = await Promise.all(promises);
-      console.log('App#68->>>', { uploads });
-
-      this.setState({ successfullUploaded: true, uploading: false });
     } catch (e) {
-      console.log('App#71->>>', { e });
-      // Not Production ready! Do some error handling here instead...
-      this.setState({ successfullUploaded: true, uploading: false });
+      console.log(e.message);
     }
   }
 
@@ -93,24 +81,52 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">Tiled Image Viewer</header>
-        <div className="map-container">
-          {this.state.mapStyle.version && <Map
-            style={this.state.mapStyle}
-            zoom={[0]}
-            containerStyle={{
-              height: '75vh',
-              width: '75vw'
-            }} >
-            <Layer type="raster" id="layer_id" sourceId="image_tiles" />
-            <ZoomControl />
-          </Map >
-          }
-        </div>
-        {this.state.images.map(({ name, zoom }) =>
-          <button key={name} onClick={() => this.switchImage(name, zoom)}>{name}</button>
-        )}
-        <FileDrop uploadFile={this.uploadFile.bind(this)} />
+        <div className="Tile-Viewer">
+          <div className="Map-container">
+            {this.state.mapStyle.version && (
+              <Map
+                style={this.state.mapStyle}
+                zoom={[0]}
+                containerStyle={{
+                  height: "55vh",
+                  width: "55vh",
+                }}
+              >
+                <Layer type="raster" id="layer_id" sourceId="image_tiles" />
+                <ZoomControl />
+              </Map>
+            )}
+          </div>
 
+          <div className="image-slider">
+            <Carousel
+              slidesToShow={3}
+              displayDots={false}
+              cellAlign="center"
+              cellSpacing={10}
+              width="35%"
+              height="150px"
+              defaultControlsConfig={{
+                nextButtonText: "Next",
+                prevButtonText: "Prev",
+                pagingDotsStyle: {
+                  fill: "red",
+                },
+              }}
+            >
+              {this.state.images.map(({ name, zoom }) => {
+                return (
+                  <img
+                    key={name}
+                    src={`http://localhost:3000/assets/${name}.jpg`}
+                    onClick={() => this.switchImage(name, zoom)}
+                  />
+                );
+              })}
+            </Carousel>
+          </div>
+          <FileDrop uploadFile={this.uploadFile.bind(this)} />
+        </div>
       </div>
     );
   }

@@ -9,7 +9,6 @@ export default class FileDrop extends Component {
       open: false,
       files: []
     };
-    // this.props.uploadFile.bind(this);
   }
 
   handleClose() {
@@ -24,9 +23,7 @@ export default class FileDrop extends Component {
       files: files,
       open: false
     });
-    console.log('FileDrop#22->>>', { state: this.state, prop: this.props });
     this.props.uploadFile(files);
-    console.log('FileDrop#23->>>', { state: this.state, prop: this.props });
   }
 
   handleOpen() {
@@ -40,7 +37,7 @@ export default class FileDrop extends Component {
       <div>
         <Button onClick={this.handleOpen.bind(this)}>
           Upload Image
-                </Button>
+        </Button>
         <DropzoneDialog
           open={this.state.open}
           onSave={this.handleSave.bind(this)}
