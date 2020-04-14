@@ -10,7 +10,7 @@
     "start": "concurrently -r -k \"yarn server\" \"yarn client\"",
     "build": "cd client && yarn build",
     "client-install": "cd client && npm install",
-    "server-install": "cd server && npm install",
+    "server-install": "npm install",
     "install-all": "npm run server-install && npm run client-install"
   },
   "keywords": [
