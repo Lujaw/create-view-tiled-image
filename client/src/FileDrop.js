@@ -1,0 +1,53 @@
+import React, { Component } from 'react';
+import { DropzoneDialog } from 'material-ui-dropzone';
+import Button from '@material-ui/core/Button';
+
+export default class FileDrop extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+      files: []
+    };
+  }
+
+  handleClose() {
+    this.setState({
+      open: false
+    });
+  }
+
+  handleSave(files) {
+    //Saving files to state for further use and closing Modal.
+    this.setState({
+      files: files,
+      open: false
+    });
+    this.props.uploadFile(files);
+  }
+
+  handleOpen() {
+    this.setState({
+      open: true,
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <Button variant="contained" color="primary" onClick={this.handleOpen.bind(this)}>
+          Upload Image
+        </Button>
+        <DropzoneDialog
+          open={this.state.open}
+          onSave={this.handleSave.bind(this)}
+          uploadFile={this.props.uploadFile}
+          acceptedFiles={['image/jpeg']}
+          showPreviews={true}
+          maxFileSize={5000000}
+          onClose={this.handleClose.bind(this)}
+        />
+      </div>
+    );
+  }
+}
