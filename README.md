@@ -1,5 +1,5 @@
 <!--
-title: 'Create View Image Tiler'
+title: 'Create View Tiled Image'
 description: 'A simple program to upload the image, create its image pyramid and then display the image in mapbox'
 framework: v1
 language: nodeJS
@@ -7,9 +7,13 @@ authorLink: 'https://github.com/lujaw'
 authorName: 'Luja Shrestha'
 -->
 
-# Create View Image Tiler
+# Create View Tiled Image
 
 A simple program to upload the image, create its image pyramid and then display the image in mapbox
+
+## Feature
+
+It uses the node module "image-tiler" create for the backend test to create the image pyramid
 
 ## Pre-requisites
 
