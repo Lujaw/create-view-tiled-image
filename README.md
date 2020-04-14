@@ -34,8 +34,11 @@ npm start
 3: The frontend should be available in port 3000, and should be serving one image. Other can be uploaded
 using the upload button. It only supports .jpg extension now.
 
+4: The image in the carousel needs to be clicked for the Mapbox to be updated
+
 ### TODO
 
 - Make the UI prettier
 - Add test cases
 - Add other extension support
+- Add event in the carousel control to update mapbox

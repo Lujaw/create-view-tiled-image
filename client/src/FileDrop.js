@@ -35,7 +35,7 @@ export default class FileDrop extends Component {
   render() {
     return (
       <div>
-        <Button onClick={this.handleOpen.bind(this)}>
+        <Button variant="contained" color="primary" onClick={this.handleOpen.bind(this)}>
           Upload Image
         </Button>
         <DropzoneDialog

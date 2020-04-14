@@ -4,6 +4,7 @@ import Carousel from "nuka-carousel";
 import FileDrop from "./FileDrop";
 import "./App.css";
 
+// initializing the mapbox
 const Map = ReactMapboxGl({});
 
 class App extends Component {
@@ -24,12 +25,16 @@ class App extends Component {
     },
     layers: [
       {
-        id: "simple-tiles",
+        id: "simple_tiles",
         type: "raster",
         source: "image_tiles",
       },
     ],
   });
+
+  componentDidMount() {
+    this.initializeView();
+  }
 
   switchImage = (imageName, zoom) => {
     this.setState({
@@ -37,7 +42,7 @@ class App extends Component {
     });
   };
 
-  componentDidMount() {
+  initializeView = () => {
     this.getImages("/listImages")
       .then(({ images }) => {
         this.setState({
@@ -46,36 +51,41 @@ class App extends Component {
         });
       })
       .catch((err) => console.log(err));
-  }
+  };
 
-  getImages = async (url) => {
+  getImages = async () => {
     const response = await fetch("/listImages");
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
   };
 
-  async sendFile(file) {
+  sendFile = async (file) => {
     const formData = new FormData();
     formData.append("image", file, file.name);
-    const response = await fetch("http://localhost:5000/upload", {
+    const response = await fetch("/upload", {
       method: "POST",
       body: formData,
     });
     return response;
-  }
+  };
 
-  async uploadFile(files) {
+  refreshPage = () => {
+    window.location.reload(false);
+  };
+
+  uploadFile = async (files) => {
     const promises = [];
     files.forEach((file) => {
       promises.push(this.sendFile(file));
     });
     try {
-      const uploads = await Promise.all(promises);
+      await Promise.all(promises);
+      this.initializeView();
     } catch (e) {
       console.log(e.message);
     }
-  }
+  };
 
   render() {
     return (
@@ -101,14 +111,13 @@ class App extends Component {
           <div className="image-slider">
             <Carousel
               slidesToShow={3}
-              displayDots={false}
               cellAlign="center"
               cellSpacing={10}
               width="35%"
               height="150px"
               defaultControlsConfig={{
-                nextButtonText: "Next",
-                prevButtonText: "Prev",
+                nextButtonText: ">",
+                prevButtonText: "<",
                 pagingDotsStyle: {
                   fill: "red",
                 },
@@ -118,6 +127,7 @@ class App extends Component {
                 return (
                   <img
                     key={name}
+                    alt={name}
                     src={`http://localhost:3000/assets/${name}.jpg`}
                     onClick={() => this.switchImage(name, zoom)}
                   />
