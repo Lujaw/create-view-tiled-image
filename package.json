@@ -27,7 +27,7 @@
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-fileupload": "^1.1.7-alpha.3",
+    "express-fileupload": "^1.1.9",
     "image-tiler": "git://github.com/lujaw/image-tiler.git#feature/PROP-03-image-tiler-refactor",
     "lodash": "^4.17.15",
     "material-ui-dropzone": "^2.4.9",
