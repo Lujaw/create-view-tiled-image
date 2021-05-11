@@ -29,7 +29,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.1.7-alpha.3",
     "image-tiler": "git://github.com/lujaw/image-tiler.git#feature/PROP-03-image-tiler-refactor",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "material-ui-dropzone": "^2.4.9",
     "readdirp": "^3.4.0"
   }
